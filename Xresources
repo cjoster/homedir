@@ -1,0 +1,12 @@
+XTerm*foreground: green
+XTerm*saveLines: 10000
+!XTerm*font: Terminus
+XTerm*background: black
+XTerm*geometry: 200x60
+!XTerm*visualBell: true
+!XTerm*selectToClipboard: true
+XTerm*ScrollBar: false
+glmatrix*density: 20
+glmatrix*clock: on
+glmatrix*timefmt: %Y %m %d %H %ML
+XTerm*printerControlMode: 1
