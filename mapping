@@ -1,1 +1,4 @@
 src/Xresources|~/.Xresources
+src/gitconfig|~/.gitconfig
+src/vimrc|~/.vimrc
+src/vimrc.d|~/.vimrc.d

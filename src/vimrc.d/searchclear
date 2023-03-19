@@ -1,0 +1,2 @@
+" Command H to blank out search highlights
+noremap H :set invhlsearch!<CR>
