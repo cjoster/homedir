@@ -7,7 +7,7 @@ _list_rcfiles() {
 	for i in ${rcfiles}; do
 		[ -r "${HOME}/${i}" ] && { [ -n "${out:-}" ] && out="${out} ${HOME}/${i}" || out="${HOME}/${i}"; }
 	done
-	[ -z "${out}" ] || echo "${out} $([ ! -d "${HOME}/.bashrc.d" ] || find "${HOME}/.bashrc.d" -name \*.sh -type f | tr '\n' ' ' | sed 's/[[:space:]]*$/\n/')"
+	[ -z "${out}" ] || echo "${out} $([ ! -d "${HOME}/.bashrc.d" ] || find -L "${HOME}/.bashrc.d" -name \*.sh -type f | tr '\n' ' ' | sed 's/[[:space:]]*$/\n/')"
 }
 
 prompt_cmd() {
