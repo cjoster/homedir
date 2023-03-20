@@ -6,6 +6,17 @@ die() {
 	>&2 echo "FATAL: ${@:-UNKNOWN FATAL ERROR}"
 }
 
+cleanup() {
+	[ -z "${TMPDIR:-}" ] || [ ! -d "${TMPDIR}" ] || rm -rf "${TMPDIR}"
+	unset TMPDIR
+}
+
+gettmp() {
+	[ -n "${TMPDIR:-}" ] || TMPDIR="$(mktemp -d /tmp/homedirsync.XXXXXX)" || die "Could not create temporary directory."
+}
+
+[ -z "${DEBUG+x}" ] || { >&2 echo "DEBUG environment variable set. Enabling debugging."; set -x; }
+trap cleanup EXIT
 dir="$(dirname "${0}")"
 
 [ -n "${dir}" ] || die "Cannot determin path to repository."
@@ -26,10 +37,22 @@ while IFS='' read -r line; do
 	src="$(echo "${line}" | cut -d\| -f 1)"
 	dst="$(echo "${line}" | cut -d\| -f 2)"
 	dst="${dst/#\~/$HOME}"
-	echo moving \"${src}\" to \"${dst}\"
-	[ -e "${dst}" ] && [ "${force}" -ne "0" ] && rm -rf "${dst}"
+	echo "Linking \"${src}\" to \"${dst}\""
+
+	tmpfile=""
+	if [ -e "${dst}" ] && [ "${force}" -ne "0" ]; then
+		gettmp
+		tmpfile="${TMPDIR}/$(basename "${dst}")"
+		mv "${dst}" "${tmpfile}" || { >&2 echo "Could not move destination file \"${dst}\" out of the way. Skipping."; continue; }
+	fi
+
 	if [ ! -e "${dst}" ]; then
-		ln -s "$(realpath "${dir}")/${src}" "${dst}"
+		ret=0
+		ln -s "$(realpath "${dir}")/${src}" "${dst}" || ret="${?}"
+		if [ "${ret}" != "0" ] && [ -n "${tmpfile}" ]; then
+			>&2 echo "Failed symlinking of \"${src}\" to \"${dst}\". Moving old file back into place."
+			mv "${tmpfile}" "${dst}" || >&2 "Failed moving old file back into place."
+		fi
 	else
 		>&2 echo "Destination \"${dst}\" exists. Not overwriting without force (-f) option."
 	fi
