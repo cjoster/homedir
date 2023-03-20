@@ -1,7 +1,7 @@
-#src/Xresources|~/.Xresources
-#src/gitconfig|~/.gitconfig
-#src/vimrc|~/.vimrc
-#src/vimrc.d|~/.vimrc.d
+src/Xresources|~/.Xresources
+src/gitconfig|~/.gitconfig
+src/vimrc|~/.vimrc
+src/vimrc.d|~/.vimrc.d
 src/bashrc|~/.bashrc
 src/bash_custom|~/.bash_custom
 src/bash_logout|~/.bash_logout
