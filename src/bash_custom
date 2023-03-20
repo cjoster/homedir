@@ -1,0 +1,37 @@
+#!/bin/bash
+																									
+alias authkey='oathtool --hotp $(gpg2 -qd ~/.oath/key) -c $([ ! -f ~/.oath/counter ] && echo -n 0 > ~/.oath/counter || echo -n $(($(cat ~/.oath/counter)+1)) > ~/.oath/counter; cat ~/.oath/counter)'
+alias pinauth='[ ! -r ~/.oath/pin ] && echo "No PIN stored." || echo "$(cat ~/.oath/pin)$(authkey)"' 
+
+export GPG_TTY=$(tty)
+str="$(gpg-agent --daemon --enable-ssh-support 2>/dev/null)"
+if [ ! -z "${str}" ]; then
+	echo "${str}" > ~/.gpg-agent-settings
+	eval $str
+else
+	eval $(cat ~/.gpg-agent-settings)
+fi
+
+alias docker-clean='docker rmi $(docker images -a | grep ^\<none\> | awk "{print \$3}")'
+
+function ykrand_h { local b="$(opensc-tool -s "00:87:03:9b:04:7c:02:81:00" 2>/dev/null | grep -E "^7C 0A 81 08 " | sed -e "s/^7C 0A 81 08 \(.*\) |.*\$/\1/" -e "s/ //g")"; if [ ! -z "${b}" ]; then echo "${b}"; ret=0; else >&2 echo "ERROR No Data returned from Yubikey"; ret=1; fi; unset b; return $ret; }
+alias ykrand='ykrand_h | xxd -r -p'
+
+function longrand_h { local o; [ -z "$1" ] && size=16 || size=$1; local f="$(echo $size/8 | bc)"; local r="$(echo $size-$f*8 | bc)"; local i; for i in $(seq 1 $f); do o="${o}$(ykrand_h)"; if [ "$?" !=
+ "0" ]; then echo "Error getting random data from yubikey"; unset o; return 1; fi; done; if [ "${r}" -gt "0" ]; then o="${o}$(ykrand_h | sed "s/^\(\(..\)\{${r}\}\).*\$/\1/")"; if [ "$?" != "0" ]; then
+ echo "Error getting random data from yubikey"; unset o; return 1; fi; fi; echo "${o}"; unset o; }
+
+function longrand { local f="$(longrand_h $1)"; if [ -z "${f}" ]; then echo "No random data returned!" > /dev/stderr; return 1; fi; echo "${f}" | xxd -r -p; unset f; }
+
+function set_vault { export ANSIBLE_VAULT_PASSWORD_FILE=~/src/myconfig/bin/getvaultpass; }
+function unset_vault { unset ANSIBLE_VAULT_PASSWORD_FILE; }
+function vault-edit { set_vault; ansible-vault edit "${1}"; unset_vault; }
+
+if [ -d ~/src/myconfig/links ]; then
+	for f in ~/src/myconfig/links/*; do
+		alias $(basename $f)="vault-edit $f"
+	done
+fi
+
+function map { [ ! -z $1 ] && [ -L ~/src/myconfig/links/$1 ] && vault-edit ~/src/myconfig/links/$1; }
+alias traps='trap -l|sed "s,\t,\n,g;s,),:,g;s,SIG,,g;s, \([0-9]\),\1,g"'

@@ -1,0 +1,17 @@
+# .bashrc
+
+tty -s || return
+
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+if [ -f ~/.bash_custom ]; then
+	. ~/.bash_custom
+fi
+
+if [ -d ~/.bashrc.d ]; then
+	for f in ~/.bashrc.d/*.sh; do
+		[ ! -f "${f}" ] || . "${f}" 
+	done
+fi

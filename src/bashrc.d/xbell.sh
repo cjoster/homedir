@@ -1,0 +1,1 @@
+[ -z "${DISPLAY}" ] || xset -b

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+die() {
+	>&2 echo "FATAL: ${@:-UNKNOWN FATAL ERROR}"
+}
+
+dir="$(dirname "${0}")"
+
+[ -n "${dir}" ] || die "Cannot determin path to repository."
+
+force=0
+
+while [ -n "${1:-}" ]; do
+	case "${1}" in
+		-f)
+				force=1
+				;;
+	esac
+	shift
+done
+
+while IFS='' read -r line; do
+	[ -n "${line}" ] || continue
+	src="$(echo "${line}" | cut -d\| -f 1)"
+	dst="$(echo "${line}" | cut -d\| -f 2)"
+	dst="${dst/#\~/$HOME}"
+	echo moving \"${src}\" to \"${dst}\"
+	[ -e "${dst}" ] && [ "${force}" -ne "0" ] && rm -rf "${dst}"
+	if [ ! -e "${dst}" ]; then
+		ln -s "$(realpath "${dir}")/${src}" "${dst}"
+	else
+		>&2 echo "Destination \"${dst}\" exists. Not overwriting without force (-f) option."
+	fi
+done <<< "$(cat ${dir}/mapping | sed 's/#.*//; /^[[:space:]]*$/d')"
