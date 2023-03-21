@@ -32,6 +32,13 @@ prompt_cmd() {
 			fi
 		fi
 	fi	
+
+	if [ ! -r ~/.config/last_greeting ] || [ "$(($(date +%s)-$(stat -c %Z ~/.config/last_greeting)))" -ge "3600" ]; then
+		morning
+	fi
+
+	touch ~/.config/last_greeting
+
 }
 
 export PROMPT_CMD=prompt_cmd
