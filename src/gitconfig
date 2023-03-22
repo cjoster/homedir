@@ -1,6 +1,7 @@
 [user]
 	name = CJ Oster
 	email = cj@cjoster.com
+	#email = ocj@vmware.com
 	#signingkey = 7195DACCCAF90D3770CD3E6BC340F9DC22B07AA1
 	signingkey = EDBC09F1083B1EB2C2AE67908813B1013F3212DB
 
@@ -22,7 +23,7 @@
 	gpgsign = true
 
 [gpg]
-	program = gpg2
+	#program = gpg2
 [init]
 	defaultBranch = main
 [push]
