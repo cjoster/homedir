@@ -41,5 +41,4 @@ prompt_cmd() {
 
 }
 
-export PROMPT_CMD=prompt_cmd
-
+export PROMPT_COMMAND=prompt_cmd
