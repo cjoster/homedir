@@ -20,7 +20,7 @@
 	vis = !gitk
 
 [commit]
-	gpgsign = true
+	#gpgsign = true
 
 [gpg]
 	#program = gpg2
