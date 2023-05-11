@@ -1,3 +1,3 @@
-cnoremap W :execute ':silent! w !sudo dd of=% status=none'<CR> <BAR> :edit!
+cnoremap W<CR> :execute ':silent! w !sudo dd of=% status=none'<CR> <BAR> :edit!
 cnoremap w!! :execute 'silent! write !sudo dd of=% status=none'<CR> <BAR> :edit!
 cnoremap wq!! :execute 'silent! write !sudo dd of=% status=none'<CR> <BAR> :quit!
