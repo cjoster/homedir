@@ -16,5 +16,15 @@ function greeting {
         fi
 }
 
-alias morning='echo -n "$(greeting) "; [ -r ~/.config/todo ] && { { echo "Your TODO list is:"; echo; cat ~/.config/todo | grep -Ev "^[[:space:]]*\$" | cat -n | sed "s/\$/\\n/"; } || true; } || echo "You have nothing on your todo list."'
+function morning {
+	echo -n "$(greeting) "
+	if [ -r ~/.config/todo ]; then
+		echo "Your TODO list is:"
+		echo
+		cat ~/.config/todo | grep -Ev "^[[:space:]]*\$" | cat -n | sed "s/\$/\\n/"
+	else
+		echo "You have nothing on your todo list."
+	fi
+}
+
 alias todo='[ ! -d ~/.config ] && mkdir ~/.config; vim ~/.config/todo'
